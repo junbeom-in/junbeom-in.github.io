@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shellcode to Python2 Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+      gap: 10px;
+    }
+    textarea, input, select {
+      padding: 5px;
+    }
+    button {
+      padding: 5px 15px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      display: none;
+      margin-left: 5px;
+    }
+    .drag-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .draggable {
+      padding: 5px;
+      margin: 3px;
+      cursor: pointer;
+      text-align: center;
+      width: 140px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      border: 1px solid #ccc;
+    }
+    .draggable .padding-input {
+      pointer-events: auto;
+      width: 40px;
+    }
+    /* 각 블록별 배경 색상 */
+    .buffer { background-color: lightblue; color: black; }
+    .ebp { background-color: lightgreen; color: black; }
+    .return { background-color: lightcoral; color: white; }
+    .padding { background-color: lightgoldenrodyellow; color: black; }
+    .shellcode { background-color: lightgray; color: black; }
+    /* 빌더 영역: 새 블록이 위쪽에 쌓이도록 column-reverse 사용 */
+    #builder {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      min-height: 100px;
+      border: 2px dashed #000;
+      padding: 10px;
+      width: 60%;
+      margin-top: 10px;
+    }
+    #builder .block {
+      margin: 5px;
+      padding: 5px;
+      cursor: pointer;
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #output {
+      font-weight: bold;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+      word-break: break-all;
+      background-color: #f0f0f0;
+    }
+    #copyMessage {
+      color: green;
+      font-size: 0.9em;
+      display: none;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+    <h1>PYTHON2 SHELLCODE MAKER</h1>
+    <h2>Created by Junbeom In</h2>
+    <h3>2025</h3>
+  <div class="container">
+    <!-- Buffer Size -->
+    <div class="row">
+      <label>Buffer Size:</label>
+      <input type="number" id="bufferSize" value="16" min="0" oninput="generateShellcode()" />
+    </div>
+    <!-- Saved EBP -->
+    <div class="row">
+      <label>Saved EBP:</label>
+      <button onclick="setEBP('32')">32-bit</button>
+      <button onclick="setEBP('64')">64-bit</button>
+      <button onclick="setEBP('custom')">Custom</button>
+      <input type="text" id="savedEBP" placeholder="(Custom: \x??...)" disabled />
+      <span class="error" id="savedEBPError">Invalid format</span>
+    </div>
+    <!-- Return Address -->
+    <div class="row">
+      <label>Return Address:</label>
+      <button onclick="setReturn('32')">32-bit</button>
+      <button onclick="setReturn('64')">64-bit</button>
+      <button onclick="setReturn('custom')">Custom</button>
+      <input type="text" id="returnAddr" placeholder="(Custom: \x??...)" disabled />
+      <span class="error" id="returnAddrError">Invalid format</span>
+    </div>
+    <!-- Shellcode -->
+    <div class="row">
+      <label>Shellcode:</label>
+      <textarea id="shellcode" placeholder="Enter shellcode (\x??...)" oninput="validateShellcode()"></textarea>
+      <span class="error" id="shellcodeError">Invalid format</span>
+    </div>
+    <!-- 드래그 컨테이너 (클릭 시 블록이 빌더 영역에 추가됨) -->
+    <div class="drag-container">
+      <div class="draggable buffer" onclick="addBlock(event, this)" data-type="buffer">
+        Buffer
+      </div>
+      <div class="draggable ebp" onclick="addBlock(event, this)" data-type="ebp">
+        Saved EBP
+      </div>
+      <div class="draggable return" onclick="addBlock(event, this)" data-type="return">
+        Return Address
+      </div>
+      <div class="draggable padding" onclick="addBlock(event, this)" data-type="padding">
+        Random Padding 
+        <input type="number" class="padding-input" value="16" min="0" oninput="generateShellcode()" />
+      </div>
+      <div class="draggable shellcode" onclick="addBlock(event, this)" data-type="shellcode">
+        Shellcode
+      </div>
+    </div>
+    <!-- 빌더 영역 -->
+    <div id="builder"></div>
+    <br />
+    <p>Generated Command:</p>
+    <pre id="output"></pre>
+    <br />
+    <button onclick="copyToClipboard()">Copy</button>
+    <button onclick="clearBuilder()">Clear</button>
+    <div id="copyMessage">Copied!</div>
+  </div>
+
+  <script>
+    // 정규표현식: 반드시 \x00 형식이어야 함 (2자리 16진수가 1쌍씩)
+    const validFormatRegex = /^(\\x[0-9A-Fa-f]{2})+$/;
+
+    // Saved EBP 버튼 처리
+    function setEBP(bit) {
+      const savedEBP = document.getElementById("savedEBP");
+      const errorSpan = document.getElementById("savedEBPError");
+      errorSpan.style.display = "none";
+      if (bit === "32") {
+        // 32bit일 경우 기본값 "'B'*4"을 표시
+        savedEBP.value = "'B'*4"; 
+        savedEBP.disabled = true;
+        savedEBP.dataset.bit = "32";
+      } else if (bit === "64") {
+        // 64bit일 경우 기본값 "'B'*8"을 표시
+        savedEBP.value = "'B'*8";
+        savedEBP.disabled = true;
+        savedEBP.dataset.bit = "64";
+      } else {
+        savedEBP.value = "";
+        savedEBP.disabled = false;
+        savedEBP.dataset.bit = "custom";
+      }
+      generateShellcode();
+    }
+
+    // Return Address 버튼 처리
+    function setReturn(bit) {
+      const returnAddr = document.getElementById("returnAddr");
+      const errorSpan = document.getElementById("returnAddrError");
+      errorSpan.style.display = "none";
+      if (bit === "32") {
+        returnAddr.value = "'C'*4";
+        returnAddr.disabled = true;
+        returnAddr.dataset.bit = "32";
+      } else if (bit === "64") {
+        returnAddr.value = "'C'*8";
+        returnAddr.disabled = true;
+        returnAddr.dataset.bit = "64";
+      } else {
+        returnAddr.value = "";
+        returnAddr.disabled = false;
+        returnAddr.dataset.bit = "custom";
+      }
+      generateShellcode();
+    }
+
+    // Shellcode 유효성 검사
+    function validateShellcode() {
+      const shellcode = document.getElementById("shellcode").value.trim();
+      const errorSpan = document.getElementById("shellcodeError");
+      if(shellcode !== "" && !validFormatRegex.test(shellcode)) {
+        errorSpan.style.display = "inline";
+      } else {
+        errorSpan.style.display = "none";
+      }
+      generateShellcode();
+    }
+
+    // custom 입력 필드 유효성 검사 (Saved EBP, Return Address)
+    function validateCustomField(fieldId, errorId) {
+      const field = document.getElementById(fieldId);
+      const errorSpan = document.getElementById(errorId);
+      const val = field.value.trim();
+      if(val !== "" && !validFormatRegex.test(val)) {
+        errorSpan.style.display = "inline";
+        return false;
+      } else {
+        errorSpan.style.display = "none";
+        return true;
+      }
+    }
+
+    // 블록 추가 (내부 input 클릭은 삭제되지 않도록)
+    function addBlock(e, element) {
+      if(e.target.tagName.toLowerCase() === "input") return;
+      const clone = element.cloneNode(true);
+      clone.classList.add("block");
+      // 단순 클릭 이벤트: 내부 input을 제외한 영역 클릭 시 삭제
+      clone.onclick = function(ev) {
+        if(ev.target.tagName.toLowerCase() !== "input") {
+          this.remove();
+          generateShellcode();
+        }
+      };
+      // 빌더 영역에 추가 (CSS의 column-reverse로 위쪽에 쌓임)
+      document.getElementById("builder").appendChild(clone);
+      generateShellcode();
+    }
+
+    // 블록별 명령어 생성
+    function getBlockValue(block) {
+      const type = block.dataset.type;
+      let content = "";
+      switch (type) {
+        case "buffer": {
+          const bufSize = document.getElementById("bufferSize").value;
+          content = "'A'*" + bufSize;
+          break;
+        }
+        case "ebp": {
+          const savedEBP = document.getElementById("savedEBP");
+          if(savedEBP.disabled && savedEBP.dataset.bit !== "custom") {
+            content = savedEBP.dataset.bit === "32" ? "'B'*4" : "'B'*8";
+          } else {
+            if(!validateCustomField("savedEBP", "savedEBPError")) return "";
+            const val = savedEBP.value.trim();
+            content = "'" + val + "'";
+          }
+          break;
+        }
+        case "return": {
+          const returnAddr = document.getElementById("returnAddr");
+          if(returnAddr.disabled && returnAddr.dataset.bit !== "custom") {
+            content = returnAddr.dataset.bit === "32" ? "'C'*4" : "'C'*8";
+          } else {
+            if(!validateCustomField("returnAddr", "returnAddrError")) return "";
+            const val = returnAddr.value.trim();
+            content = "'" + val + "'";
+          }
+          break;
+        }
+        case "padding": {
+          const paddingInput = block.querySelector(".padding-input");
+          const padVal = paddingInput ? paddingInput.value : "0";
+          content = "'D'*" + padVal;
+          break;
+        }
+        case "shellcode": {
+          const shell = document.getElementById("shellcode").value.trim();
+          if(shell !== "" && !validFormatRegex.test(shell)) {
+            return "";
+          }
+          content = "'" + shell + "'";
+          break;
+        }
+        default:
+          content = "''";
+      }
+      return content;
+    }
+
+    // 최종 명령어 생성: 블록 순서대로 " + "로 연결
+    function generateShellcode() {
+      const builder = document.getElementById("builder");
+      const blocks = Array.from(builder.children);
+      let parts = [];
+      for(let block of blocks) {
+        let part = getBlockValue(block);
+        if(part === "") {
+          document.getElementById("output").innerText = "Error: Invalid input detected.";
+          return;
+        }
+        parts.push(part);
+      }
+      const command = "python2 -c \"print " + parts.join(" + ") + "\"";
+      document.getElementById("output").innerText = command;
+    }
+
+    // Copy 버튼: 명령어 복사 및 인라인 메시지 표시 (2초 후 사라짐)
+    function copyToClipboard() {
+      const output = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(output);
+      const copyMsg = document.getElementById("copyMessage");
+      copyMsg.style.display = "block";
+      setTimeout(() => { copyMsg.style.display = "none"; }, 2000);
+    }
+
+    // Clear 버튼: 빌더 초기화 및 명령어 재생성
+    function clearBuilder() {
+      document.getElementById("builder").innerHTML = "";
+      generateShellcode();
+    }
+
+    // 페이지 로딩 시 기본값 설정 (Saved EBP와 Return Address를 32bit 기본값으로)
+    document.addEventListener("DOMContentLoaded", function() {
+      setEBP('32');
+      setReturn('32');
+      generateShellcode();
+    });
+  </script>
+</body>
+</html>
