@@ -1,0 +1,5 @@
+baseURL = 'https://hey.iamyourjun.com'
+languageCode = 'en-us'
+title = 'Junbeom In'
+theme = "github-style"
+
