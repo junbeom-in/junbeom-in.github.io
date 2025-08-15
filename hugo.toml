@@ -27,9 +27,12 @@ theme = "terminal"
   centerTheme = true
   showLanguageSelector = false
 
+
   [params.logo]
         logoText = "Junbeom In"
         logoHomeLink = "/"
+    
+
 
 
 # MENU
