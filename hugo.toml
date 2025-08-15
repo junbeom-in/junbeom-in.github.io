@@ -1,0 +1,50 @@
+baseURL = 'https://hey.iamyourjun.com/'
+
+languageCode = 'en-us'
+hasCJKLanguage = true
+enableEmoji = true
+
+title = 'Junbeom In'
+copyright = '© 2025 Junbeom In'
+
+timeZone = "America/New_York"
+
+
+theme = "terminal"
+
+# GITHUB PAGE
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
+# THEME
+[markup.highlight]
+  noClasses = false
+
+[params]
+  autoCover = false
+  fullWidthTheme = true
+  centerTheme = true
+  showLanguageSelector = false
+
+  [params.logo]
+        logoText = "Junbeom In"
+        logoHomeLink = "/"
+
+
+# MENU
+[menus]
+  [[menus.main]]
+    name = 'Home'
+    pageRef = '/'
+    weight = 10
+  [[menus.main]]
+    name = 'Contacts'
+    pageRef = '/contacts/'
+    weight = 20
+
+# FORM
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true  # 콘텐츠에 HTML 사용 허용
