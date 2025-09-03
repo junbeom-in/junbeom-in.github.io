@@ -6,8 +6,8 @@ enableEmoji = true
 
 
 
-relativeURLs = true
-canonifyURLs = true
+# relativeURLs = true
+# canonifyURLs = true
 
 title = 'Junbeom In'
 copyright = '© 2025 Junbeom In'
