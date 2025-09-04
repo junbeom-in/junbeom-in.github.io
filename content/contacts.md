@@ -1,6 +1,6 @@
 +++
 date = '2025-08-15T12:00:21-04:00'
-draft = true
+draft = false
 title = 'Contacts'
 hideTitle = true
 +++
