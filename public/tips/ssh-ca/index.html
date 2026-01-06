@@ -2,16 +2,17 @@
 <html lang="en">
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
-    <title>Tags :: Junbeom In</title>
+    <title>SSH CA - How to add? :: Junbeom In</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="" />
+<meta name="description" content="Based on openssh environment
+1. Copy an SSH CA certificate file 2. Edit sshd_config file /etc/ssh/sshd_config 3. Add CA certificate location TrustedUserCAKeys [PATH] 4. systemctl restart" />
 <meta name="keywords" content="" />
 
   <meta name="robots" content="noodp" />
 
-<link rel="canonical" href="http://localhost:1313/tags/" />
+<link rel="canonical" href="http://localhost:1313/tips/ssh-ca/" />
 
 
 
@@ -71,10 +72,11 @@
 
 
 <meta property="og:locale" content="en" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="Tags">
-<meta property="og:description" content="" />
-<meta property="og:url" content="http://localhost:1313/tags/" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SSH CA - How to add?">
+<meta property="og:description" content="Based on openssh environment
+1. Copy an SSH CA certificate file 2. Edit sshd_config file /etc/ssh/sshd_config 3. Add CA certificate location TrustedUserCAKeys [PATH] 4. systemctl restart" />
+<meta property="og:url" content="http://localhost:1313/tips/ssh-ca/" />
 <meta property="og:site_name" content="Junbeom In" />
 
   <meta property="og:image" content="http://localhost:1313/og-image.png">
@@ -83,10 +85,10 @@
 <meta property="og:image:height" content="627">
 
 
+  <meta property="article:published_time" content="2026-01-06 11:14:31 -0500 EST" />
 
 
 
-  <link href="/tags/index.xml" rel="alternate" type="application/rss+xml" title="Junbeom In" />
 
 
 
@@ -173,14 +175,38 @@
 
   <div class="content">
     
-  <div class="terms">
-    <h1>Tags</h1>
+<article class="post">
+  
+    <h1 class="post-title">
+      <a href="http://localhost:1313/tips/ssh-ca/">SSH CA - How to add?</a>
+    </h1>
+    <div class="post-meta"><time class="post-date">2026-01-06</time></div>
+
     
-    <ul>
-      
-      
-    </ul>
-  </div>
+    
+
+
+    
+  
+  
+  <div class="post-content"><div>
+        <p>Based on openssh environment</p>
+<h1 id="1-copy-an-ssh-ca-certificate-file">1. Copy an SSH CA certificate file<a href="#1-copy-an-ssh-ca-certificate-file" class="hanchor" ariaLabel="Anchor">#</a> </h1>
+<h1 id="2-edit-sshd_config-file">2. Edit <code>sshd_config</code> file<a href="#2-edit-sshd_config-file" class="hanchor" ariaLabel="Anchor">#</a> </h1>
+<pre tabindex="0"><code>/etc/ssh/sshd_config
+</code></pre><h1 id="3-add-ca-certificate-location">3. Add CA certificate location<a href="#3-add-ca-certificate-location" class="hanchor" ariaLabel="Anchor">#</a> </h1>
+<pre tabindex="0"><code>TrustedUserCAKeys [PATH]
+</code></pre><h1 id="4-systemctl-restart">4. <code>systemctl restart</code><a href="#4-systemctl-restart" class="hanchor" ariaLabel="Anchor">#</a> </h1>
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
 
   </div>
 

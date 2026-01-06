@@ -48,3 +48,6 @@ theme = "terminal"
     name = 'Credentials'
     pageRef = '/credentials/'
     weight = 30
+  [[menus.main]]
+    name = 'Tips'
+    pageRef = '/tips/'

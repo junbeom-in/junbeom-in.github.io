@@ -1,1 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url><loc>https://hey.iamyourjun.com/credentials/</loc><lastmod>2026-01-06T10:41:23-05:00</lastmod></url><url><loc>https://hey.iamyourjun.com/contacts/</loc><lastmod>2025-08-15T12:00:21-04:00</lastmod></url><url><loc>https://hey.iamyourjun.com/</loc><lastmod>2025-08-15T11:30:12-04:00</lastmod></url><url><loc>https://hey.iamyourjun.com/categories/</loc></url><url><loc>https://hey.iamyourjun.com/tags/</loc></url></urlset>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>http://localhost:1313/tips/ssh-ca/</loc>
+    <lastmod>2026-01-06T11:14:31-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tips/</loc>
+    <lastmod>2026-01-06T11:14:31-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/credentials/</loc>
+    <lastmod>2026-01-06T10:41:23-05:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/contacts/</loc>
+    <lastmod>2025-08-15T12:00:21-04:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2025-08-15T11:30:12-04:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/</loc>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+  </url>
+</urlset>
