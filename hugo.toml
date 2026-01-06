@@ -4,8 +4,6 @@ languageCode = 'en-us'
 hasCJKLanguage = true
 enableEmoji = true
 
-
-
 # relativeURLs = true
 # canonifyURLs = true
 
@@ -13,7 +11,6 @@ title = 'Junbeom In'
 copyright = '© 2025 Junbeom In'
 
 timeZone = "America/New_York"
-
 
 theme = "terminal"
 
@@ -32,13 +29,10 @@ theme = "terminal"
   centerTheme = true
   showLanguageSelector = false
 
-
   [params.logo]
         logoText = "Junbeom In"
         logoHomeLink = "/"
     
-
-
 
 # MENU
 [menus]
@@ -50,9 +44,7 @@ theme = "terminal"
     name = 'Contacts'
     pageRef = '/contacts/'
     weight = 20
-
-# FORM
-[markup]
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true  # 콘텐츠에 HTML 사용 허용
+  [[menus.main]]
+    name = 'Credentials'
+    pageRef = '/credentials/'
+    weight = 30
